@@ -1,23 +1,18 @@
 FROM ubuntu:latest
 
-# Update & install Python + pip
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y python3 python3-pip
 
-# Fix "externally managed" error
-RUN rm -f /usr/lib/python3.*/EXTERNALLY-MANAGED
+# Fix externally managed Python issue
+RUN rm -f /usr/lib/python*/EXTERNALLY-MANAGED
 
-# Install Flask
+# Install Flask + CORS
 RUN pip3 install flask
+RUN pip3 install flask-cors
 
-# Create /app inside the container and go there
 WORKDIR /app
+COPY ./api.py /app/api.py
 
-# Copy your api.py into the container
-COPY api.py .
-
-# Expose the port
-EXPOSE 5252
-
-# THIS IS THE ONLY COMMAND THAT WORKS 100% OF THE TIME
-CMD ["python3", "api.py"]
+CMD ["python3", "/app/api.py"]
